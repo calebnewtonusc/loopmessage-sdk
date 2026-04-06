@@ -18,6 +18,7 @@ export {
   validatePassthrough,
   validateTyping,
   validateDate,
+  validateShowTyping,
 } from "./validate.ts";
 
 // Webhook utilities

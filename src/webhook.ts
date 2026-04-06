@@ -129,6 +129,10 @@ export interface WebhookHandlers {
  * Route a parsed webhook payload to the correct handler.
  * Returns a promise that resolves after all handlers complete.
  *
+ * onAny is guaranteed to fire after the specific handler, even if it threw.
+ * If both the specific handler and onAny throw, the specific handler error
+ * is preserved and re-thrown; the onAny error is discarded.
+ *
  * @example
  * const payload = parseWebhook(body)
  * await dispatchWebhook(payload, {
@@ -144,7 +148,9 @@ export async function dispatchWebhook(
   payload: WebhookPayload,
   handlers: WebhookHandlers,
 ): Promise<void> {
-  // onAny fires in finally, guaranteed even if the specific handler throws
+  let specificError: unknown;
+  let hasSpecificError = false;
+
   try {
     switch (payload.event) {
       case "message_inbound":
@@ -172,9 +178,22 @@ export async function dispatchWebhook(
         await handlers.onUnknown?.(payload as UnknownEventPayload);
         break;
     }
-  } finally {
-    await handlers.onAny?.(payload);
+  } catch (err) {
+    specificError = err;
+    hasSpecificError = true;
   }
+
+  // onAny always fires, regardless of whether the specific handler threw
+  if (handlers.onAny) {
+    try {
+      await handlers.onAny(payload);
+    } catch (anyErr) {
+      // If the specific handler already threw, preserve that error
+      if (!hasSpecificError) throw anyErr;
+    }
+  }
+
+  if (hasSpecificError) throw specificError;
 }
 
 // ─── WebhookServer: Bun/Node-compatible HTTP handler ──────────────────────────
