@@ -1,7 +1,7 @@
 {
   "name": "@caleb/loopmessage-sdk",
   "version": "1.1.0",
-  "description": "Fully-typed TypeScript SDK for the Loop Message iMessage API",
+  "description": "Send real iMessages (blue bubbles) from your backend. Fully-typed TypeScript SDK for the Loop Message cloud API — send, campaigns, webhooks, opt-ins, reactions, voice. Zero dependencies. Bun + Node.js.",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -29,6 +29,17 @@
     "lint": "biome check src/",
     "prepublishOnly": "npm run typecheck && npm run build"
   },
+  "keywords": [
+    "imessage",
+    "loopmessage",
+    "iMessage API",
+    "sms",
+    "messaging",
+    "typescript",
+    "bun",
+    "webhook",
+    "apple"
+  ],
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "tsup": "^8.4.0",

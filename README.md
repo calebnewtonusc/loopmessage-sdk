@@ -1,7 +1,12 @@
 # @caleb/loopmessage-sdk
 
-Fully-typed TypeScript SDK for the [Loop Message](https://loopmessage.com) iMessage API.
-Zero dependencies. Bun-native. Works on Node.js too.
+Send real iMessages — the blue-bubble kind — from your backend.
+
+[Loop Message](https://loopmessage.com) is a cloud API that lets you send Apple iMessages programmatically. Unlike SMS or email, iMessages land in the same app your contacts use all day. No carrier fees. No SMS character limits. Full support for effects, reactions, attachments, group threads, and voice messages. This SDK wraps their entire API in TypeScript so you can ship in minutes.
+
+**Zero runtime dependencies. Fully typed. Bun-native. Node.js compatible.**
+
+> You need a Loop Message account and an API key to use this SDK. Get one at [loopmessage.com](https://loopmessage.com).
 
 ## Install
 
@@ -105,18 +110,28 @@ const { status, error_code } = await client.messages.getStatus(message_id);
 
 ### `client.audience`
 
-| Method                             | Description                                 |
-| ---------------------------------- | ------------------------------------------- |
-| `list(params?)`                    | Paginated list of all contacts              |
-| `checkStatus(contact)`             | Check opt-in status for one contact         |
-| `unsubscribe(contact)`             | Remove a contact from your audience         |
-| `messageHistory(contact, params?)` | Full inbound/outbound history for a contact |
+| Method                             | Description                                       |
+| ---------------------------------- | ------------------------------------------------- |
+| `list(params?)`                    | One page of contacts                              |
+| `listAll(params?)`                 | Async generator — yields every page automatically |
+| `collectAll(params?)`              | Flat array of all contacts, auto-paged            |
+| `checkStatus(contact)`             | Check opt-in status for one contact               |
+| `unsubscribe(contact)`             | Remove a contact from your audience               |
+| `messageHistory(contact, params?)` | Full inbound/outbound history for a contact       |
 
 ```ts
-const { items, count } = await client.audience.list({
-  per_page: 100,
-  search: "+1323",
-});
+// One page
+const { items, count } = await client.audience.list({ per_page: 100 });
+
+// All contacts as a flat array (auto-pages through everything)
+const allContacts = await client.audience.collectAll();
+console.log(`Total: ${allContacts.length}`);
+
+// Stream page-by-page (better for large lists)
+for await (const page of client.audience.listAll()) {
+  for (const contact of page) console.log(contact.value);
+}
+
 const { status } = await client.audience.checkStatus("+13231112233");
 // status: 'active' | 'unsubscribed' | 'unknown'
 
