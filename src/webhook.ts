@@ -144,33 +144,37 @@ export async function dispatchWebhook(
   payload: WebhookPayload,
   handlers: WebhookHandlers,
 ): Promise<void> {
-  switch (payload.event) {
-    case "message_inbound":
-      await handlers.onMessageInbound?.(payload);
-      break;
-    case "message_delivered":
-      await handlers.onMessageDelivered?.(payload);
-      break;
-    case "message_failed":
-      await handlers.onMessageFailed?.(payload);
-      break;
-    case "message_reaction":
-      await handlers.onMessageReaction?.(payload);
-      break;
-    case "opt-in":
-      await handlers.onOptIn?.(payload);
-      break;
-    case "inbound_call":
-      await handlers.onInboundCall?.(payload);
-      break;
-    case "sender_name_updated":
-      await handlers.onSenderNameUpdated?.(payload);
-      break;
-    default:
-      await handlers.onUnknown?.(payload as UnknownEventPayload);
-      break;
+  // onAny fires in finally — guaranteed even if the specific handler throws
+  try {
+    switch (payload.event) {
+      case "message_inbound":
+        await handlers.onMessageInbound?.(payload);
+        break;
+      case "message_delivered":
+        await handlers.onMessageDelivered?.(payload);
+        break;
+      case "message_failed":
+        await handlers.onMessageFailed?.(payload);
+        break;
+      case "message_reaction":
+        await handlers.onMessageReaction?.(payload);
+        break;
+      case "opt-in":
+        await handlers.onOptIn?.(payload);
+        break;
+      case "inbound_call":
+        await handlers.onInboundCall?.(payload);
+        break;
+      case "sender_name_updated":
+        await handlers.onSenderNameUpdated?.(payload);
+        break;
+      default:
+        await handlers.onUnknown?.(payload as UnknownEventPayload);
+        break;
+    }
+  } finally {
+    await handlers.onAny?.(payload);
   }
-  await handlers.onAny?.(payload);
 }
 
 // ─── WebhookServer — Bun/Node-compatible HTTP handler ─────────────────────────
@@ -254,5 +258,106 @@ export function createWebhookHandler(options: WebhookServerOptions) {
     dispatchWebhook(payload, handlers).catch((err) => onError(err, payload));
 
     return new Response("OK", { status: 200 });
+  };
+}
+
+// ─── Node.js HTTP adapter ─────────────────────────────────────────────────────
+
+/**
+ * Build a Node.js-compatible request handler for receiving Loop Message webhooks.
+ * Use with `http.createServer` or any Express-like framework.
+ *
+ * @example
+ * import http from 'node:http'
+ * import { createNodeWebhookHandler } from '@caleb/loopmessage-sdk'
+ *
+ * const handler = createNodeWebhookHandler({
+ *   secret: process.env.WEBHOOK_SECRET,
+ *   handlers: {
+ *     onMessageInbound: async ({ contact, text }) => {
+ *       await client.messages.send({ contact, text: `got: ${text}` })
+ *     },
+ *   },
+ * })
+ *
+ * http.createServer(handler).listen(8080)
+ *
+ * // Express
+ * app.post('/webhook', (req, res) => handler(req as any, res as any))
+ */
+export function createNodeWebhookHandler(options: WebhookServerOptions) {
+  const { secret, handlers, onError = console.error } = options;
+
+  return async function handle(
+    req: {
+      method?: string;
+      url?: string;
+      headers: Record<string, string | string[] | undefined>;
+      on(event: "data", fn: (chunk: Buffer) => void): void;
+      on(event: "end", fn: () => void): void;
+      on(event: "error", fn: (err: Error) => void): void;
+    },
+    res: {
+      writeHead(status: number, headers?: Record<string, string>): void;
+      end(body?: string): void;
+    },
+  ): Promise<void> {
+    // Health check
+    if (req.method === "GET" && req.url === "/health") {
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ status: "ok" }));
+      return;
+    }
+
+    if (req.method !== "POST") {
+      res.writeHead(405);
+      res.end();
+      return;
+    }
+
+    // Optional auth
+    if (secret) {
+      const rawAuth = req.headers["authorization"];
+      const authHeader = Array.isArray(rawAuth) ? rawAuth[0] : (rawAuth ?? "");
+      const urlObj = new URL(req.url ?? "", "http://localhost");
+      const qs = urlObj.searchParams.get("secret") ?? "";
+      if (authHeader !== `Bearer ${secret}` && qs !== secret) {
+        res.writeHead(401);
+        res.end("Unauthorized");
+        return;
+      }
+    }
+
+    // Read body
+    let rawBody = "";
+    try {
+      await new Promise<void>((resolve, reject) => {
+        req.on("data", (chunk: Buffer) => {
+          rawBody += chunk.toString();
+        });
+        req.on("end", resolve);
+        req.on("error", reject);
+      });
+    } catch {
+      res.writeHead(400);
+      res.end("Bad Request");
+      return;
+    }
+
+    // Parse
+    let payload: WebhookPayload;
+    try {
+      payload = parseWebhook(rawBody);
+    } catch {
+      res.writeHead(400);
+      res.end("Bad Request");
+      return;
+    }
+
+    // Respond 200 immediately, dispatch async
+    res.writeHead(200);
+    res.end("OK");
+
+    dispatchWebhook(payload, handlers).catch((err) => onError(err, payload));
   };
 }

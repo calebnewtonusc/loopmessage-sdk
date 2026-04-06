@@ -240,33 +240,38 @@ export interface CampaignMessage {
   attachments?: string[];
 }
 
+/** Shared scheduling/display fields for both campaign modes */
+interface CampaignBaseParams {
+  name: string;
+  attachments?: string[];
+  from_date?: string; // YYYY-MM-DD
+  from_time?: string; // HH:mm, default 10:00
+  to_time?: string; // HH:mm, default 22:00
+  timezone?: string; // TZ identifier, default America/New_York
+  effect?: Effect;
+  /** Subject line (iMessage only) */
+  subject?: string;
+}
+
+/** Broadcast the same text to all contacts */
+export interface BroadcastCampaignParams extends CampaignBaseParams {
+  text: string;
+  contacts: string[];
+  /** Blocked to prevent passing both modes at once */
+  messages?: never;
+}
+
+/** Send individualized messages (different text per contact) */
+export interface IndividualizedCampaignParams extends CampaignBaseParams {
+  messages: CampaignMessage[];
+  /** Blocked to prevent passing both modes at once */
+  text?: never;
+  contacts?: never;
+}
+
 export type CreateCampaignParams =
-  | {
-      /** Campaign name */
-      name: string;
-      /** Broadcast the same message to all contacts */
-      text: string;
-      contacts: string[];
-      attachments?: string[];
-      from_date?: string; // YYYY-MM-DD
-      from_time?: string; // HH:mm
-      to_time?: string; // HH:mm
-      timezone?: string; // TZ identifier e.g. America/New_York
-      effect?: Effect;
-      subject?: string;
-    }
-  | {
-      name: string;
-      /** Send individualized messages (different text per contact) */
-      messages: CampaignMessage[];
-      attachments?: string[];
-      from_date?: string;
-      from_time?: string;
-      to_time?: string;
-      timezone?: string;
-      effect?: Effect;
-      subject?: string;
-    };
+  | BroadcastCampaignParams
+  | IndividualizedCampaignParams;
 
 export interface CreateCampaignResponse {
   id: string;

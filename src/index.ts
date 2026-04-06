@@ -15,6 +15,7 @@ export {
   parseWebhook,
   dispatchWebhook,
   createWebhookHandler,
+  createNodeWebhookHandler,
   // Type guards
   isMessageInbound,
   isMessageDelivered,
@@ -65,6 +66,8 @@ export type {
   // Campaigns
   CampaignMessage,
   CreateCampaignParams,
+  BroadcastCampaignParams,
+  IndividualizedCampaignParams,
   CreateCampaignResponse,
   // Opt-in
   GenerateOptInUrlParams,
