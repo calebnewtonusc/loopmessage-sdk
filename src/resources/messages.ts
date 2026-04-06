@@ -12,6 +12,13 @@ import type {
   ShowTypingByMessageIdParams,
   ShowTypingParams,
 } from "../types.ts";
+import {
+  validateAttachments,
+  validateMediaUrl,
+  validatePassthrough,
+  validateShowTyping,
+  validateTyping,
+} from "../validate.ts";
 
 /**
  * All messaging operations — send, react, type, voice, status.
@@ -23,12 +30,22 @@ export class MessagesResource {
   /**
    * Send a text message to a single contact (phone or email).
    *
+   * Constraints validated before hitting the API:
+   * - attachments: max 3, each must be https://, max 256 chars
+   * - passthrough: max 1000 chars
+   *
    * @example
    * await client.messages.send({ contact: '+13231112233', text: 'Hey!' })
    * await client.messages.send({ contact: '+13231112233', text: 'Boom', effect: 'fireworks' })
-   * await client.messages.send({ contact: '+13231112233', text: 'See attachment', attachments: ['https://example.com/img.jpg'] })
+   * await client.messages.send({
+   *   contact: '+13231112233',
+   *   text: 'See attachment',
+   *   attachments: ['https://example.com/img.jpg'],
+   * })
    */
   send(params: SendMessageParams): Promise<SendMessageResponse> {
+    validateAttachments(params.attachments);
+    validatePassthrough(params.passthrough);
     return this.http.post<SendMessageResponse>("/api/v1/message/send/", params);
   }
 
@@ -40,6 +57,8 @@ export class MessagesResource {
    * await client.messages.sendGroup({ group: 'group-uuid', text: 'Hello everyone!' })
    */
   sendGroup(params: SendGroupMessageParams): Promise<SendGroupMessageResponse> {
+    validateAttachments(params.attachments);
+    validatePassthrough(params.passthrough);
     return this.http.post<SendGroupMessageResponse>(
       "/api/v1/message/send/",
       params,
@@ -49,11 +68,17 @@ export class MessagesResource {
   /**
    * Send a voice message (audio file) to a contact.
    * Supported formats: mp3, wav, m4a, caf, aac.
+   * media_url must be https:// and ≤256 chars.
    *
    * @example
-   * await client.messages.sendVoice({ contact: '+13231112233', media_url: 'https://example.com/audio.m4a' })
+   * await client.messages.sendVoice({
+   *   contact: '+13231112233',
+   *   media_url: 'https://example.com/audio.m4a',
+   * })
    */
   sendVoice(params: SendVoiceMessageParams): Promise<SendVoiceMessageResponse> {
+    validateMediaUrl(params.media_url);
+    validatePassthrough(params.passthrough);
     return this.http.post<SendVoiceMessageResponse>(
       "/api/v1/message/send/",
       params,
@@ -76,15 +101,19 @@ export class MessagesResource {
    * Show a typing indicator and/or mark a conversation as read.
    *
    * Pass message_id (from webhook) to auto-route to the correct sender,
-   * or pass contact + sender explicitly.
+   * OR pass contact + sender explicitly. Never both.
+   *
+   * Validated: typing must be 1–60 seconds.
    *
    * @example
    * // Auto-route via message_id
    * await client.messages.showTyping({ message_id: 'uuid', typing: 5 })
-   * // Explicit
+   * // Explicit contact
    * await client.messages.showTyping({ contact: '+13231112233', sender: 'sender-id', typing: 3, read: true })
    */
   showTyping(params: ShowTypingParams): Promise<void> {
+    validateShowTyping(params as unknown as Record<string, unknown>);
+    validateTyping(params.typing);
     return this.http.post<void>("/api/v1/message/show-typing/", params);
   }
 

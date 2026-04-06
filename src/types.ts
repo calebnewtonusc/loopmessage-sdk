@@ -162,6 +162,10 @@ export interface ShowTypingByMessageIdParams {
   typing?: number;
   /** Mark conversation as read */
   read?: boolean;
+  /** Blocked — use message_id OR contact+sender, not both */
+  contact?: never;
+  /** Blocked — use message_id OR contact+sender, not both */
+  sender?: never;
 }
 
 export interface ShowTypingByContactParams {
@@ -173,6 +177,8 @@ export interface ShowTypingByContactParams {
   typing?: number;
   /** Mark conversation as read */
   read?: boolean;
+  /** Blocked — use message_id OR contact+sender, not both */
+  message_id?: never;
 }
 
 export type ShowTypingParams =

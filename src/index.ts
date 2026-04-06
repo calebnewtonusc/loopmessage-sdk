@@ -10,6 +10,16 @@ export {
   FATAL_CODES,
 } from "./errors.ts";
 
+// Validation utilities — export so callers can pre-validate before sending
+export {
+  validateAttachments,
+  validateMediaUrl,
+  validateOptInBody,
+  validatePassthrough,
+  validateTyping,
+  validateDate,
+} from "./validate.ts";
+
 // Webhook utilities
 export {
   parseWebhook,

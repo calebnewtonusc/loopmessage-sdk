@@ -3,6 +3,7 @@ import type {
   GenerateOptInUrlParams,
   GenerateOptInUrlResponse,
 } from "../types.ts";
+import { validateOptInBody } from "../validate.ts";
 
 /**
  * Opt-in link generation.
@@ -16,6 +17,7 @@ export class OptInResource {
    *
    * The body MUST contain the placeholder [opt-in-code] — the API replaces it
    * with a unique verification code the contact sends back to complete opt-in.
+   * This is validated before the request is made.
    *
    * Returns three link formats:
    * - imessage:// — deep links into Messages.app (iOS 13+)
@@ -37,6 +39,7 @@ export class OptInResource {
   generateUrl(
     params: GenerateOptInUrlParams,
   ): Promise<GenerateOptInUrlResponse> {
+    validateOptInBody(params.body);
     return this.http.post<GenerateOptInUrlResponse>(
       "/api/v1/opt-in/generate-url/",
       params,

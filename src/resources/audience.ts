@@ -1,5 +1,6 @@
 import type { HttpClient } from "../http.ts";
 import type {
+  AudienceItem,
   AudienceListParams,
   AudienceListResponse,
   AudienceStatusResponse,
@@ -15,7 +16,8 @@ export class AudienceResource {
   constructor(private readonly http: HttpClient) {}
 
   /**
-   * List all contacts in your audience.
+   * List one page of contacts in your audience.
+   * For all contacts at once, use listAll() or collectAll().
    *
    * @example
    * const { items, count } = await client.audience.list({ per_page: 100 })
@@ -30,6 +32,47 @@ export class AudienceResource {
       to_date: params.to_date,
       search: params.search,
     });
+  }
+
+  /**
+   * Async generator that yields all audience items across all pages automatically.
+   * Each iteration yields one page of items (up to per_page, default 100).
+   *
+   * @example
+   * for await (const page of client.audience.listAll()) {
+   *   for (const contact of page) {
+   *     console.log(contact.value);
+   *   }
+   * }
+   */
+  listAll(
+    params: Omit<AudienceListParams, "page"> = {},
+  ): AsyncGenerator<AudienceItem[]> {
+    return this.http.paginate<AudienceItem>("/api/v1/audience/list/", {
+      per_page: params.per_page ?? 100,
+      sort_by: params.sort_by,
+      from_date: params.from_date,
+      to_date: params.to_date,
+      search: params.search,
+    });
+  }
+
+  /**
+   * Collect ALL audience items into a single flat array, paging automatically.
+   * For large lists (10k+), prefer listAll() to avoid holding everything in memory.
+   *
+   * @example
+   * const contacts = await client.audience.collectAll();
+   * console.log(`Total: ${contacts.length}`);
+   */
+  async collectAll(
+    params: Omit<AudienceListParams, "page"> = {},
+  ): Promise<AudienceItem[]> {
+    const items: AudienceItem[] = [];
+    for await (const page of this.listAll(params)) {
+      items.push(...page);
+    }
+    return items;
   }
 
   /**
@@ -64,7 +107,10 @@ export class AudienceResource {
    * Response also contains the contact's current opt-in status.
    *
    * @example
-   * const history = await client.audience.messageHistory('+13231112233', { direction: 'inbound', per_page: 50 })
+   * const history = await client.audience.messageHistory('+13231112233', {
+   *   direction: 'inbound',
+   *   per_page: 50,
+   * })
    */
   messageHistory(
     contact: string,

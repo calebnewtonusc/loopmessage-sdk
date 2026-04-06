@@ -1,4 +1,5 @@
 import { LoopMessageError, RETRYABLE_CODES, throwApiError } from "./errors.ts";
+import type { PaginatedResponse } from "./types.ts";
 
 export interface HttpClientConfig {
   /** Your Organization API Key — no Bearer prefix needed */
@@ -122,5 +123,33 @@ export class HttpClient {
   async delete<T = void>(path: string): Promise<T> {
     const url = this.buildUrl(path);
     return this.withRetry(() => this.execute<T>("DELETE", url));
+  }
+
+  /**
+   * Async generator that pages through a paginated list endpoint.
+   * Each iteration yields the items array for one page.
+   *
+   * @example
+   * for await (const pageItems of http.paginate('/api/v1/audience/list/')) {
+   *   for (const item of pageItems) console.log(item);
+   * }
+   */
+  async *paginate<T>(
+    path: string,
+    params: Record<string, QueryValue> = {},
+    options: { maxPages?: number } = {},
+  ): AsyncGenerator<T[]> {
+    const { maxPages = Infinity } = options;
+    let page = 1;
+
+    while (page <= maxPages) {
+      const result = await this.get<PaginatedResponse<T>>(path, {
+        ...params,
+        page,
+      });
+      yield result.items;
+      if (page >= result.num_pages) break;
+      page++;
+    }
   }
 }
