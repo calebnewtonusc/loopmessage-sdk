@@ -200,7 +200,7 @@ export interface WebhookServerOptions {
  *
  * @example
  * // Bun server
- * import { createWebhookHandler } from '@caleb/loopmessage-sdk'
+ * import { createWebhookHandler } from '@loopmessagesdk/loopmessage-sdk'
  *
  * const handler = createWebhookHandler({
  *   secret: process.env.WEBHOOK_SECRET,
@@ -269,7 +269,7 @@ export function createWebhookHandler(options: WebhookServerOptions) {
  *
  * @example
  * import http from 'node:http'
- * import { createNodeWebhookHandler } from '@caleb/loopmessage-sdk'
+ * import { createNodeWebhookHandler } from '@loopmessagesdk/loopmessage-sdk'
  *
  * const handler = createNodeWebhookHandler({
  *   secret: process.env.WEBHOOK_SECRET,

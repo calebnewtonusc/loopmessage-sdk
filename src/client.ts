@@ -27,7 +27,7 @@ export interface LoopMessageClientConfig extends HttpClientConfig {
  * - client.optIn     — generate opt-in URLs
  *
  * @example
- * import { LoopMessageClient } from '@caleb/loopmessage-sdk'
+ * import { LoopMessageClient } from '@loopmessagesdk/loopmessage-sdk'
  *
  * const client = new LoopMessageClient({
  *   apiKey: process.env.LOOP_API_KEY!,

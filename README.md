@@ -1,4 +1,4 @@
-# @caleb/loopmessage-sdk
+# @loopmessagesdk/loopmessage-sdk
 
 Send real iMessages — the blue-bubble kind — from your backend.
 
@@ -11,15 +11,15 @@ Send real iMessages — the blue-bubble kind — from your backend.
 ## Install
 
 ```bash
-bun add @caleb/loopmessage-sdk
+bun add @loopmessagesdk/loopmessage-sdk
 # or
-npm install @caleb/loopmessage-sdk
+npm install @loopmessagesdk/loopmessage-sdk
 ```
 
 ## Quick Start
 
 ```ts
-import { LoopMessageClient } from "@caleb/loopmessage-sdk";
+import { LoopMessageClient } from "@loopmessagesdk/loopmessage-sdk";
 
 const client = new LoopMessageClient({
   apiKey: process.env.LOOP_API_KEY!,
@@ -194,7 +194,7 @@ Loop Message POSTs events to your server. You must respond with HTTP 200 within 
 import {
   LoopMessageClient,
   createWebhookHandler,
-} from "@caleb/loopmessage-sdk";
+} from "@loopmessagesdk/loopmessage-sdk";
 
 const client = new LoopMessageClient({ apiKey: process.env.LOOP_API_KEY! });
 
@@ -227,7 +227,7 @@ Bun.serve({ port: 8080, fetch: handler });
 ### Manual parsing
 
 ```ts
-import { parseWebhook, dispatchWebhook, isMessageInbound } from '@caleb/loopmessage-sdk'
+import { parseWebhook, dispatchWebhook, isMessageInbound } from '@loopmessagesdk/loopmessage-sdk'
 
 // Parse raw body string or pre-parsed object
 const payload = parseWebhook(rawBodyString)
@@ -260,7 +260,7 @@ await dispatchWebhook(payload, { onMessageInbound: async (p) => { ... } })
 All API errors throw `LoopMessageError`:
 
 ```ts
-import { LoopMessageError } from "@caleb/loopmessage-sdk";
+import { LoopMessageError } from "@loopmessagesdk/loopmessage-sdk";
 
 try {
   await client.messages.send({ contact: "+13231112233", text: "hey" });
