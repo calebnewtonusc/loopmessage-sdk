@@ -1,4 +1,4 @@
-# @loopmessagesdk/loopmessage-sdk
+# @loopmessagesdk/loopmessage-sdk (Unofficial)
 
 Send real iMessages (the blue-bubble kind) from your backend.
 

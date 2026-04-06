@@ -1,7 +1,7 @@
 {
   "name": "@loopmessagesdk/loopmessage-sdk",
   "version": "1.2.0",
-  "description": "Send real iMessages (blue bubbles) from your backend. Fully-typed TypeScript SDK for the Loop Message cloud API. Covers send, campaigns, webhooks, opt-ins, reactions, and voice. Zero dependencies. Bun + Node.js.",
+  "description": "Unofficial TypeScript SDK for the Loop Message cloud API. Send real iMessages (blue bubbles) from your backend. Covers send, campaigns, webhooks, opt-ins, reactions, and voice. Zero dependencies. Bun + Node.js.",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
