@@ -19,12 +19,12 @@ export interface LoopMessageClientConfig extends HttpClientConfig {
  * Loop Message API client.
  *
  * Covers the full API surface:
- * - client.messages  — send, voice, reaction, typing, status
- * - client.audience  — list contacts, check status, unsubscribe, message history
- * - client.campaigns — create bulk campaigns
- * - client.senders   — list sender names
- * - client.pools     — list sender pools
- * - client.optIn     — generate opt-in URLs
+ * - client.messages: send, voice, reaction, typing, status
+ * - client.audience: list contacts, check status, unsubscribe, message history
+ * - client.campaigns: create bulk campaigns
+ * - client.senders: list sender names
+ * - client.pools: list sender pools
+ * - client.optIn: generate opt-in URLs
  *
  * @example
  * import { LoopMessageClient } from '@loopmessagesdk/loopmessage-sdk'
@@ -61,7 +61,7 @@ export interface LoopMessageClientConfig extends HttpClientConfig {
  * })
  */
 export class LoopMessageClient {
-  /** Raw HTTP client — available for advanced use cases */
+  /** Raw HTTP client, available for advanced use cases */
   readonly http: HttpClient;
 
   /** Default sender ID (set in constructor, overridden per-call) */

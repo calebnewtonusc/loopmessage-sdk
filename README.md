@@ -1,6 +1,6 @@
 # @loopmessagesdk/loopmessage-sdk
 
-Send real iMessages — the blue-bubble kind — from your backend.
+Send real iMessages (the blue-bubble kind) from your backend.
 
 [Loop Message](https://loopmessage.com) is a cloud API that lets you send Apple iMessages programmatically. Unlike SMS or email, iMessages land in the same app your contacts use all day. No carrier fees. No SMS character limits. Full support for effects, reactions, attachments, group threads, and voice messages. This SDK wraps their entire API in TypeScript so you can ship in minutes.
 
@@ -38,7 +38,7 @@ const { status } = await client.messages.getStatus(message_id);
 
 ## Auth
 
-Your API key goes in the `Authorization` header with **no Bearer prefix** — per Loop Message docs.
+Your API key goes in the `Authorization` header with **no Bearer prefix**, per Loop Message docs.
 Never expose it client-side.
 
 ```ts
@@ -113,7 +113,7 @@ const { status, error_code } = await client.messages.getStatus(message_id);
 | Method                             | Description                                       |
 | ---------------------------------- | ------------------------------------------------- |
 | `list(params?)`                    | One page of contacts                              |
-| `listAll(params?)`                 | Async generator — yields every page automatically |
+| `listAll(params?)`                 | Async generator that yields every page automatically |
 | `collectAll(params?)`              | Flat array of all contacts, auto-paged            |
 | `checkStatus(contact)`             | Check opt-in status for one contact               |
 | `unsubscribe(contact)`             | Remove a contact from your audience               |
@@ -145,7 +145,7 @@ const history = await client.audience.messageHistory("+13231112233", {
 ### `client.campaigns`
 
 ```ts
-// Broadcast — same message to all
+// Broadcast: same message to all
 await client.campaigns.create({
   name: "April drop",
   text: "new drop. check it.",
@@ -153,7 +153,7 @@ await client.campaigns.create({
   timezone: "America/Los_Angeles",
 });
 
-// Individualized — different text per contact
+// Individualized: different text per contact
 await client.campaigns.create({
   name: "Personal outreach",
   messages: [
@@ -179,9 +179,9 @@ const links = await client.optIn.generateUrl({
   body: "Reply [opt-in-code] to subscribe.",
   utm_campaign: "spring-launch",
 });
-// links.url      — universal HTTPS
-// links.imessage — iOS 13+ deep link
-// links.sms      — iOS 12 fallback
+// links.url: universal HTTPS
+// links.imessage: iOS 13+ deep link
+// links.sms: iOS 12 fallback
 ```
 
 ## Webhooks

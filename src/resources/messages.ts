@@ -21,7 +21,7 @@ import {
 } from "../validate.ts";
 
 /**
- * All messaging operations — send, react, type, voice, status.
+ * All messaging operations: send, react, type, voice, status.
  * Access via client.messages
  */
 export class MessagesResource {
@@ -103,7 +103,7 @@ export class MessagesResource {
    * Pass message_id (from webhook) to auto-route to the correct sender,
    * OR pass contact + sender explicitly. Never both.
    *
-   * Validated: typing must be 1–60 seconds.
+   * Validated: typing must be 1-60 seconds.
    *
    * @example
    * // Auto-route via message_id

@@ -15,14 +15,14 @@ export class OptInResource {
   /**
    * Generate a unique opt-in URL for a contact.
    *
-   * The body MUST contain the placeholder [opt-in-code] — the API replaces it
+   * The body MUST contain the placeholder [opt-in-code]. The API replaces it
    * with a unique verification code the contact sends back to complete opt-in.
    * This is validated before the request is made.
    *
    * Returns three link formats:
-   * - imessage:// — deep links into Messages.app (iOS 13+)
-   * - sms://       — fallback for older iOS
-   * - url          — universal HTTPS link (works anywhere)
+   * - imessage://: deep link into Messages.app (iOS 13+)
+   * - sms://: fallback for older iOS
+   * - url: universal HTTPS link (works anywhere)
    *
    * Any extra fields on the params object are passed through and echoed
    * in the opt-in webhook when the contact completes opt-in.

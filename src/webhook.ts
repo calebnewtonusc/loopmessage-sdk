@@ -121,7 +121,7 @@ export interface WebhookHandlers {
     payload: SenderNameUpdatedPayload,
   ) => void | Promise<void>;
   onUnknown?: (payload: UnknownEventPayload) => void | Promise<void>;
-  /** Called for every event, regardless of type — fires after the specific handler */
+  /** Called for every event, regardless of type. Fires after the specific handler */
   onAny?: (payload: WebhookPayload) => void | Promise<void>;
 }
 
@@ -144,7 +144,7 @@ export async function dispatchWebhook(
   payload: WebhookPayload,
   handlers: WebhookHandlers,
 ): Promise<void> {
-  // onAny fires in finally — guaranteed even if the specific handler throws
+  // onAny fires in finally, guaranteed even if the specific handler throws
   try {
     switch (payload.event) {
       case "message_inbound":
@@ -177,10 +177,10 @@ export async function dispatchWebhook(
   }
 }
 
-// ─── WebhookServer — Bun/Node-compatible HTTP handler ─────────────────────────
+// ─── WebhookServer: Bun/Node-compatible HTTP handler ──────────────────────────
 
 export interface WebhookServerOptions {
-  /** Optional secret — if set, validates Authorization: Bearer <secret> header */
+  /** Optional secret. If set, validates Authorization: Bearer <secret> header */
   secret?: string;
   /** Handlers to call for each event type */
   handlers: WebhookHandlers;
@@ -245,7 +245,7 @@ export function createWebhookHandler(options: WebhookServerOptions) {
       return new Response("Bad Request", { status: 400 });
     }
 
-    // Parse — return 400 on malformed JSON so Loop doesn't retry forever
+    // Parse: return 400 on malformed JSON so Loop does not retry forever
     let payload: WebhookPayload;
     try {
       payload = parseWebhook(rawBody);
@@ -253,7 +253,7 @@ export function createWebhookHandler(options: WebhookServerOptions) {
       return new Response("Bad Request", { status: 400 });
     }
 
-    // Respond 200 immediately — Loop requires < 15s response
+    // Respond 200 immediately. Loop requires < 15s response
     // Dispatch handlers asynchronously so we don't block the response
     dispatchWebhook(payload, handlers).catch((err) => onError(err, payload));
 

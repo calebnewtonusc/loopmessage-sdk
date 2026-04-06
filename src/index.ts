@@ -10,7 +10,7 @@ export {
   FATAL_CODES,
 } from "./errors.ts";
 
-// Validation utilities — export so callers can pre-validate before sending
+// Validation utilities, exported so callers can pre-validate before sending
 export {
   validateAttachments,
   validateMediaUrl,
@@ -38,7 +38,7 @@ export {
 } from "./webhook.ts";
 export type { WebhookHandlers, WebhookServerOptions } from "./webhook.ts";
 
-// All types — re-exported for convenience
+// All types, re-exported for convenience
 export type {
   // Primitives
   Channel,

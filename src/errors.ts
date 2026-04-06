@@ -44,8 +44,8 @@ export const ERROR_MESSAGES: Readonly<Record<number, string>> = {
   630: "Need to set up a vCard file for this sender name in the dashboard",
   640: "No media file URL (media_url)",
   1000: "Internal error during the sending process",
-  1010: "Unable to send message — retry after short delay",
-  1020: "Message sent but destination returned Not Delivered — retry after delay",
+  1010: "Unable to send message. Retry after a short delay",
+  1020: "Message sent but destination returned Not Delivered. Retry after a delay",
   1030: "Message sent but no delivery confirmation received",
   1110: "Unable to send SMS if the recipient is an email address",
   1120: "Unable to send SMS if the recipient is a group",
@@ -59,7 +59,7 @@ export const ERROR_MESSAGES: Readonly<Record<number, string>> = {
 export const RETRYABLE_CODES = new Set([1010, 1020, 1030]);
 
 /**
- * Auth/billing errors — stop retrying immediately, surface to caller.
+ * Auth/billing errors. Stop retrying immediately and surface to caller.
  */
 export const FATAL_CODES = new Set([110, 130, 300, 310, 320, 330]);
 
@@ -87,7 +87,7 @@ export class LoopMessageError extends Error {
     return RETRYABLE_CODES.has(this.code);
   }
 
-  /** True for auth/billing failures — don't retry, surface immediately */
+  /** True for auth/billing failures. Do not retry; surface immediately */
   get isFatal(): boolean {
     return FATAL_CODES.has(this.code);
   }

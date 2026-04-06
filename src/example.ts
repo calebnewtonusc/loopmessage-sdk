@@ -1,5 +1,5 @@
 /**
- * Usage examples — not part of the published SDK.
+ * Usage examples. Not part of the published SDK.
  * Run with: bun run src/example.ts
  */
 
@@ -178,7 +178,7 @@ const handler = createWebhookHandler({
       await client.messages.send({ contact, text: `got it: ${text}` });
     },
     onMessageFailed: ({ error_code, contact }) => {
-      console.error(`Delivery failed for ${contact} — code ${error_code}`);
+      console.error(`Delivery failed for ${contact}, code ${error_code}`);
     },
     onOptIn: ({ contact }) => {
       console.log(`New opt-in: ${contact}`);
@@ -193,4 +193,4 @@ const handler = createWebhookHandler({
 });
 
 // Bun.serve({ port: 8080, fetch: handler })
-console.log("Handler ready — uncomment Bun.serve to start");
+console.log("Handler ready. Uncomment Bun.serve to start");

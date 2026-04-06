@@ -2,7 +2,7 @@ import { LoopMessageError, RETRYABLE_CODES, throwApiError } from "./errors.ts";
 import type { PaginatedResponse } from "./types.ts";
 
 export interface HttpClientConfig {
-  /** Your Organization API Key — no Bearer prefix needed */
+  /** Your Organization API Key. No Bearer prefix needed */
   apiKey: string;
   /**
    * Override the base URL. Defaults to https://a.loopmessage.com
@@ -13,7 +13,7 @@ export interface HttpClientConfig {
   timeout?: number;
   /** Max retry attempts for retryable errors (1010, 1020, 1030). Default: 2 */
   retries?: number;
-  /** Base delay between retries in ms — multiplied by attempt number. Default: 2_000 */
+  /** Base delay between retries in ms, multiplied by attempt number. Default: 2_000 */
   retryDelay?: number;
 }
 
@@ -65,10 +65,10 @@ export class HttpClient {
       signal: AbortSignal.timeout(this.timeout),
     });
 
-    // 204 No Content — DELETE success
+    // 204 No Content (DELETE success)
     if (r.status === 204) return undefined as T;
 
-    // 404 — resource not found
+    // 404 (resource not found)
     if (r.status === 404) {
       throw new LoopMessageError("Not found", 100, 404);
     }

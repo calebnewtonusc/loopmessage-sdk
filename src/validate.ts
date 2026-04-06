@@ -51,7 +51,7 @@ export function validateMediaUrl(mediaUrl: string): void {
 }
 
 /**
- * typing: must be 1–60 seconds.
+ * typing: must be 1-60 seconds.
  */
 export function validateTyping(typing: number | undefined): void {
   if (typing === undefined) return;

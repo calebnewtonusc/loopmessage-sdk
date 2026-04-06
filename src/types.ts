@@ -76,7 +76,7 @@ export interface SendMessageParams {
   subject?: string;
   /** Sender name ID to send from */
   sender?: string;
-  /** HTTPS image URLs — max 3, max 256 chars each */
+  /** HTTPS image URLs. Max 3, max 256 chars each */
   attachments?: string[];
   /** iMessage screen/bubble effect */
   effect?: Effect;
@@ -99,12 +99,12 @@ export interface SendMessageResponse {
 // ─── Send Group Message ────────────────────────────────────────────────────────
 
 export interface SendGroupMessageParams {
-  /** iMessage group GUID — obtain from message_inbound webhook */
+  /** iMessage group GUID. Obtain from a message_inbound webhook */
   group: string;
   text: string;
   subject?: string;
   sender?: string;
-  /** HTTPS image URLs — max 3 */
+  /** HTTPS image URLs. Max 3 */
   attachments?: string[];
   effect?: Effect;
   reply_to_id?: string;
@@ -156,15 +156,15 @@ export interface SendReactionParams {
 // ─── Typing Indicator ─────────────────────────────────────────────────────────
 
 export interface ShowTypingByMessageIdParams {
-  /** message_id from an inbound webhook — SDK routes to correct sender automatically */
+  /** message_id from an inbound webhook. The SDK routes to the correct sender automatically */
   message_id: string;
   /** Duration to show typing in seconds (max 60) */
   typing?: number;
   /** Mark conversation as read */
   read?: boolean;
-  /** Blocked — use message_id OR contact+sender, not both */
+  /** Blocked: use message_id OR contact+sender, not both */
   contact?: never;
-  /** Blocked — use message_id OR contact+sender, not both */
+  /** Blocked: use message_id OR contact+sender, not both */
   sender?: never;
 }
 
@@ -177,7 +177,7 @@ export interface ShowTypingByContactParams {
   typing?: number;
   /** Mark conversation as read */
   read?: boolean;
-  /** Blocked — use message_id OR contact+sender, not both */
+  /** Blocked: use message_id OR contact+sender, not both */
   message_id?: never;
 }
 
@@ -296,7 +296,7 @@ export interface GenerateOptInUrlParams {
   click_id?: string;
   utm_campaign?: string;
   utm_medium?: string;
-  /** Any additional custom fields — echoed in the opt-in webhook */
+  /** Any additional custom fields, echoed in the opt-in webhook */
   [key: string]: string | undefined;
 }
 
